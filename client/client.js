@@ -839,6 +839,7 @@
 
   function getHashPaths(modview, dest) {
     var path = location.pathname;
+    var queryStr = location.hash && location.hash.split("?")[1];
     droppy.views.forEach(function(view) {
       view = $(view);
       if (modview && modview.is(view)) {
@@ -847,6 +848,11 @@
         path += "/#" + getViewLocation(view);
       }
     });
+
+    if (queryStr) {
+      // if add query
+      return path.replace(/\/+/g, "/") + "?" + queryStr;
+    }
     return path.replace(/\/+/g, "/");
   }
 
@@ -876,7 +882,8 @@
             view[0].animDirection = "back";
           }
 
-          sendMessage(view[0].vId, "REQUEST_UPDATE", viewDest);
+          var viewDestArray = viewDest.split("?");
+          sendMessage(view[0].vId, "REQUEST_UPDATE", viewDestArray[0]);
 
           // Skip the push if we're already navigating through history
           if (!skipPush) pushHistory(view, viewDest);
